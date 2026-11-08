@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>血满草 (Sambucus adnata) 血清药物化学与 UPLC-MS/MS 鉴定动态演示系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #070B19;
+            --bg-panel: rgba(16, 24, 48, 0.78);
+            --amber-glow: #F59E0B;
+            --blue-glow: #38BDF8;
+            --emerald-glow: #10B981;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: radial-gradient(circle at 50% 20%, #162244 0%, #090D1E 65%, #050811 100%);
+            color: #E2E8F0;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+        }
+        .stage-btn {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stage-btn.active {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(16, 185, 129, 0.18));
+            border-color: #38BDF8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+        }
+        .mol-card {
+            transition: all 0.2s ease;
+        }
+        .mol-card:hover {
+            transform: translateY(-1px);
+            background: rgba(30, 41, 59, 0.85);
+        }
+        .mol-card.selected {
+            background: rgba(30, 41, 59, 0.95);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.5);
+            border-radius: 4px;
+        }
+        .sci-grid {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col sci-grid">
+
+    <!-- Top Header & Stage Navigation Bar -->
+    <header class="w-full px-4 pt-3 pb-2 z-20">
+        <div class="max-w-[1600px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-3 glass-panel rounded-xl px-4 py-2.5">
+            <!-- Title Brand -->
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 via-sky-500 to-amber-500 p-[1.5px] flex-shrink-0">
+                    <div class="w-full h-full bg-slate-950 rounded-[7px] flex items-center justify-center">
+                        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base md:text-lg font-bold tracking-tight text-white">血满草 (<span class="italic font-normal text-emerald-300">Sambucus adnata</span>) 入血成分 UPLC-Q-TOF-MS/MS 动态解析系统</h1>
+                        <span class="hidden sm:inline-block text-[11px] mono uppercase px-2 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30">Serum Pharmacochemistry</span>
+
+                        <!-- Author Credit: 王葳制作 (after main title) -->
+                        <span class="hidden sm:inline-flex items-center gap-1.5 shrink-0" title="王葳制作">
+                            <span class="w-1 h-1 rounded-full shrink-0 bg-gradient-to-r from-emerald-400 to-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.65)]"></span>
+                            <span class="text-[11px] font-semibold tracking-[0.3em] -mr-[0.3em] whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-sky-300 to-amber-300" style="font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif;">王葳制作</span>
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-400">从原植物跨膜入血、C18反相色谱保留洗脱、高能碰撞诱导解离 (CID) 到二级质谱镜像谱库匹配</p>
+                </div>
+            </div>
+
+            <!-- 4-Act Stage Switcher -->
+            <div class="flex flex-wrap items-center justify-center gap-1.5" id="stageTabs">
+                <button onclick="setStage(1)" id="stageBtn1" class="stage-btn active px-3 py-1.5 rounded-lg border border-slate-700/80 text-xs font-medium flex items-center gap-1.5">
+                    <span class="w-5 h-5 rounded-full bg-rose-500/20 border border-rose-400/50 text-rose-300 flex items-center justify-center mono text-[11px]">01</span>
+                    <div class="text-left">
+                        <div class="text-slate-100 font-semibold leading-tight">跨膜入血</div>
+                        <div class="text-[10px] text-slate-400 leading-none">Blood Absorption</div>
+                    </div>
+                </button>
+                <button onclick="setStage(2)" id="stageBtn2" class="stage-btn px-3 py-1.5 rounded-lg border border-slate-700/80 text-xs font-medium flex items-center gap-1.5">
+                    <span class="w-5 h-5 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 flex items-center justify-center mono text-[11px]">02</span>
+                    <div class="text-left">
+                        <div class="text-slate-100 font-semibold leading-tight">UPLC-C18分离</div>
+                        <div class="text-[10px] text-slate-400 leading-none">C18 Separation</div>
+                    </div>
+                </button>
+                <button onclick="setStage(3)" id="stageBtn3" class="stage-btn px-3 py-1.5 rounded-lg border border-slate-700/80 text-xs font-medium flex items-center gap-1.5">
+                    <span class="w-5 h-5 rounded-full bg-sky-500/20 border border-sky-400/50 text-sky-300 flex items-center justify-center mono text-[11px]">03</span>
+                    <div class="text-left">
+                        <div class="text-slate-100 font-semibold leading-tight">ESI电离与CID碎裂</div>
+                        <div class="text-[10px] text-slate-400 leading-none">MS/MS Fragmentation</div>
+                    </div>
+                </button>
+                <button onclick="setStage(4)" id="stageBtn4" class="stage-btn px-3 py-1.5 rounded-lg border border-slate-700/80 text-xs font-medium flex items-center gap-1.5">
+                    <span class="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 flex items-center justify-center mono text-[11px]">04</span>
+                    <div class="text-left">
+                        <div class="text-slate-100 font-semibold leading-tight">镜像谱库比对</div>
+                        <div class="text-[10px] text-slate-400 leading-none">Mirror Plot Match</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Playback Controls -->
+            <div class="flex items-center gap-2">
+                <button id="autoSequenceBtn" onclick="toggleAutoDirector()" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-medium flex items-center gap-1.5 transition">
+                    <span id="autoDirectorDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="autoDirectorText">自动连播四幕: 开</span>
+                </button>
+                <button id="recordVideoBtn" onclick="toggleCanvasRecording()" class="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/35 border border-rose-500/50 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition shadow-[0_0_12px_rgba(244,63,94,0.25)]">
+                    <span id="recordDot" class="w-2 h-2 rounded-full bg-rose-400"></span>
+                    <span id="recordBtnText">录制视频素材</span>
+                </button>
+                <button id="cinemaModeBtn" onclick="toggleCinemaMode()" class="px-2.5 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/35 border border-indigo-400/40 text-indigo-200 text-xs font-medium transition" title="隐藏右侧面板与多余按钮，适合全屏录屏或影片嵌入">
+                    纯净全屏
+                </button>
+                <button id="playPauseBtn" onclick="togglePause()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-medium transition">
+                    暂停
+                </button>
+                <div class="flex items-center bg-slate-900/90 rounded-lg p-0.5 border border-slate-700/80 text-xs mono">
+                    <button onclick="setSpeed(0.5)" id="spd05" class="px-2 py-1 rounded text-slate-400 hover:text-white">0.5x</button>
+                    <button onclick="setSpeed(1)" id="spd1" class="px-2 py-1 rounded bg-sky-500/30 text-sky-300 font-semibold">1x</button>
+                    <button onclick="setSpeed(2)" id="spd2" class="px-2 py-1 rounded text-slate-400 hover:text-white">2x</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Floating Exit Cinema Mode Button (Hidden by default) -->
+    <button id="exitCinemaBtn" onclick="toggleCinemaMode()" class="hidden fixed bottom-12 right-5 z-50 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-600 text-slate-300 text-xs backdrop-blur-md transition shadow-lg">
+        退出纯净模式 (ESC)
+    </button>
+
+    <!-- Main Content Workspace -->
+    <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 pb-3 flex flex-col xl:flex-row gap-3 overflow-hidden" id="mainWorkspace">
+
+        <!-- Left Column: Simulation Stage Panel -->
+        <div class="flex-1 flex flex-col min-w-0 gap-3">
+            <div class="flex-1 glass-panel rounded-xl overflow-hidden flex flex-col relative border border-slate-700/70">
+
+                <!-- Floating Stage HUD Overlay -->
+                <div class="absolute top-3 left-3 right-3 z-10 flex flex-col gap-2 pointer-events-none">
+                    <div class="bg-slate-950/85 backdrop-blur-md border border-slate-700/80 rounded-lg px-4 py-2.5 pointer-events-auto">
+                        <div class="flex items-center gap-2">
+                            <span id="hudStageBadge" class="text-[10px] mono uppercase tracking-wider text-sky-300 bg-sky-500/15 border border-sky-500/30 px-1.5 py-0.5 rounded">ACT I · 00:00 - 00:12</span>
+                            <h2 id="hudStageTitle" class="text-sm font-bold text-white">第一幕：原植物释放与跨膜入血 (Bloodstream Absorption)</h2>
+                        </div>
+                        <p id="hudStageDesc" class="text-xs text-slate-300 mt-1 leading-relaxed">
+                            血满草组织释放木脂素（琥珀金）、环烯醚萜及特征成分（宝蓝）、五环三萜（翠绿）三大类活性分子，穿透小肠上皮磷脂双分子层进入微血管，与红细胞及血浆白蛋白交织随血流运行。
+                        </p>
+                    </div>
+
+                    <!-- Focused Compound Telemetry Badge -->
+                    <div class="bg-slate-950/85 backdrop-blur-md border border-slate-700/80 rounded-lg px-3.5 py-2 pointer-events-auto flex items-center gap-3">
+                        <div id="hudMolColorDot" class="w-3.5 h-3.5 rounded-full bg-emerald-400 shadow-[0_0_12px_#10B981]"></div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-slate-400">当前追踪类别:</span>
+                                <span id="hudMolName" class="text-sm font-bold text-white">三萜类入血成分 (Triterpenoids)</span>
+                                <span id="hudMolFormula" class="text-xs mono text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/30">五环三萜母核</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-[11px] mono text-slate-300 mt-0.5">
+                                <span id="hudMolTr">tR: 13.5 - 16.8 min</span>
+                                <span>|</span>
+                                <span id="hudMolPrecursor">母离子 [M-H]⁻ 特征簇</span>
+                                <span>|</span>
+                                <span id="hudMolError" class="text-emerald-400">Δm &lt; 1.2 ppm</span>
+                            </div>
+                        </div>
+                        <button onclick="triggerActionPulse()" id="stageActionBtn" class="ml-1 px-2.5 py-1 rounded bg-sky-500/20 hover:bg-sky-500/35 border border-sky-400/40 text-sky-200 text-xs font-medium transition">
+                            重播本幕动画
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Interactive HTML5 Canvas -->
+                <canvas id="simCanvas" class="w-full h-full block flex-1 cursor-crosshair"></canvas>
+
+                <!-- Bottom Legend & Stage Progress Bar -->
+                <div class="bg-slate-950/90 border-t border-slate-800/80 px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex flex-wrap items-center gap-3.5">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-[0_0_8px_#A855F7]"></span>
+                            <span class="text-slate-300"><strong class="text-purple-300">酚酸类</strong> (2.1–3.8m)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_8px_#3B82F6]"></span>
+                            <span class="text-slate-300"><strong class="text-sky-300">环烯醚萜类</strong> (4.5–6.8m)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-400 shadow-[0_0_8px_#F43F5E]"></span>
+                            <span class="text-slate-300"><strong class="text-rose-300">黄酮类</strong> (7.2–9.5m)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_#F59E0B]"></span>
+                            <span class="text-slate-300"><strong class="text-amber-300">木脂素类</strong> (10.2–12.6m)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981]"></span>
+                            <span class="text-slate-300"><strong class="text-emerald-300">三萜类</strong> (13.5–16.8m)</span>
+                        </div>
+                    </div>
+
+                    <!-- Stage Timeline Progress -->
+                    <div class="flex items-center gap-2 min-w-[220px]">
+                        <span class="text-[11px] mono text-slate-400" id="stageTimerLabel">幕次进度</span>
+                        <div class="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="stageProgressBar" class="h-full bg-gradient-to-r from-sky-400 to-emerald-400 w-1/3 transition-all duration-100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar: 5 Structural Classes Selector & MS/MS Rules -->
+        <aside class="w-full xl:w-[410px] glass-panel rounded-xl p-3 flex flex-col justify-between border border-slate-700/70 max-h-[820px]">
+            <div>
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2.5">
+                    <div>
+                        <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+                            <span>血满草 5 大类入血成分结构库</span>
+                            <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">5 Structural Classes</span>
+                        </h3>
+                        <p class="text-[11px] text-slate-400">按结构类型归类展示（保密模式：隐去具体单体名称与精确质量数）</p>
+                    </div>
+                </div>
+
+                <!-- 5 Structural Classes List -->
+                <div id="moleculeListContainer" class="space-y-2 overflow-y-auto max-h-[470px] pr-1">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Selected Class Detailed Cleavage Mechanism Box -->
+            <div class="mt-3 pt-2.5 border-t border-slate-800/90 bg-slate-950/60 rounded-lg p-3 border border-slate-800">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-sky-400 mono">类别特征 CID 裂解规律解析</span>
+                    <span id="detailMatchScore" class="text-xs mono font-bold text-emerald-400">Class Match: 98.5%</span>
+                </div>
+                <div id="detailPathwayTitle" class="text-xs font-semibold text-white mb-1">
+                    三萜类 (Triterpenoids) · C环RDA裂解与连续脱羧/脱水反应
+                </div>
+                <p id="detailPathwayDesc" class="text-[11px] text-slate-300 leading-relaxed">
+                    三萜类入血成分准分子离子在碰撞池中优先发生羧基脱羧 (-CO₂, 44 Da) 或脱甲酸 (-HCOOH, 46 Da) 及羟基脱水 (-H₂O, 18 Da)；同时C环不饱和双键发生典型逆Diels-Alder (RDA) 环裂解，生成高丰度特征诊断碎片离子。
+                </p>
+                <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] mono text-slate-400">
+                    <span id="detailNeutralLoss">特征丢失: -CO₂ (44 Da), -H₂O (18 Da), RDA环裂解</span>
+                    <span id="detailIonMode" class="text-amber-300">ESI⁻ / ESI⁺ Mode</span>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <script>
+        /**
+         * 血满草 (Sambucus adnata) 5大结构类别入血成分数据库（保密脱敏版）
+         * 严格不展示任何未公开的具体单体名称、具体分子式及精确单体m/z数值，全部按5大结构类别展示其共性色谱行为与质谱裂解规律
+         */
+        const MOLECULES = [
+            // 1. 酚酸类 (Phenolic Acids) - 极性大，最先洗脱 (2.1 - 3.8 min)
+            {
+                id: 'phenolic_acids',
+                name: '酚酸类成分',
+                enName: 'Phenolic Acids',
+                category: '酚酸及有机酸类 (极性大)',
+                catCode: 'phenolic',
+                color: '#A855F7',
+                glow: 'rgba(168, 85, 247, 0.55)',
+                formula: 'Ar-COOH / C₆-C₃型骨架',
+                ionMode: '[M-H]⁻',
+                precursorLabel: '[M-H]⁻ 准分子离子',
+                exactMass: '酚酸母离子簇',
+                massError: '< 1.0 ppm',
+                tR: 2.95,
+                tRRange: '2.1 - 3.8 min',
+                matchScore: 97.8,
+                neutralLoss: '-CO₂ (44 Da) / -H₂O (18 Da) / -CH₃• (15 Da)',
+                fragments: [
+                    { pos: 0.72, relAbund: 52, code: '[M-H]⁻', label: '酚酸准分子母离子', isPrecursor: true },
+                    { pos: 0.54, relAbund: 100, code: '[M-H-CO₂]⁻', label: '羧基脱羧基峰 (-44 Da)', loss: '-CO₂ (44 Da)' },
+                    { pos: 0.44, relAbund: 64, code: '[M-H-CO₂-H₂O]⁻', label: '伴随邻位酚羟基脱水 (-18 Da)', loss: '-H₂O (18 Da)' },
+                    { pos: 0.34, relAbund: 78, code: '[M-H-CO₂-CH₃]•⁻', label: '甲氧基自由基裂解 (-15 Da)', loss: '-CH₃• (15 Da)' },
+                    { pos: 0.21, relAbund: 35, code: '[C₆H₅O₂]⁻', label: '苯环特征诊断核心离子' }
+                ],
+                pathwayDesc: '酚酸类入血成分极性较大，在反相C18柱上最先洗脱 (2.1–3.8 min)。负离子模式下 [M-H]⁻ 母离子在碰撞池中极易发生芳香羧基或丙烯酸侧链脱羧 (-CO₂, 44 Da) 生成基峰，随后伴随酚羟基脱水 (-H₂O, 18 Da) 及甲氧基自由基丢失 (-CH₃•, 15 Da)。'
+            },
+
+            // 2. 环烯醚萜类 (Iridoids) - 极性中偏大 (4.5 - 6.8 min)
+            {
+                id: 'iridoids',
+                name: '环烯醚萜类成分',
+                enName: 'Iridoids',
+                category: '环烯醚萜及特征苷类 (中高极性)',
+                catCode: 'iridoid',
+                color: '#3B82F6',
+                glow: 'rgba(59, 130, 246, 0.55)',
+                formula: '环戊烷并吡喃苷骨架',
+                ionMode: '[M-H]⁻ / [M+HCOO]⁻',
+                precursorLabel: '[M-H]⁻ 准分子离子',
+                exactMass: '环烯醚萜母离子簇',
+                massError: '< 0.8 ppm',
+                tR: 5.65,
+                tRRange: '4.5 - 6.8 min',
+                matchScore: 98.9,
+                neutralLoss: '-Glc (162 Da) / -H₂O (18 Da) / 半缩醛开环',
+                fragments: [
+                    { pos: 0.80, relAbund: 46, code: '[M-H]⁻', label: '环烯醚萜母离子', isPrecursor: true },
+                    { pos: 0.56, relAbund: 100, code: '[M-H-Glc]⁻', label: '脱糖基苷元基峰 (-162 Da)', loss: '-Glc (162 Da)' },
+                    { pos: 0.48, relAbund: 58, code: '[Aglycone-H-H₂O]⁻', label: '苷元连续脱水峰 (-18 Da)', loss: '-H₂O (18 Da)' },
+                    { pos: 0.36, relAbund: 74, code: '[Aglycone-RDA]⁻', label: '环戊烷并吡喃半缩醛开环碎片', loss: '半缩醛环RDA裂解' },
+                    { pos: 0.24, relAbund: 66, code: '[Glc-H-H₂O]⁻', label: '糖基特征互补诊断离子' }
+                ],
+                pathwayDesc: '环烯醚萜类成分在碰撞诱导解离 (CID) 下优先发生 O-糖苷键断裂，中性丢失一分子脱水单糖残基 (-Glc, 162 Da) 形成高丰度苷元基峰 [M-H-Glc]⁻；随后环戊烷并[c]吡喃半缩醛环发生特征性开环、脱水 (-H₂O, 18 Da) 及逆Diels-Alder裂解。'
+            },
+
+            // 3. 黄酮类 (Flavonoids) - 中等极性 (7.2 - 9.5 min)
+            {
+                id: 'flavonoids',
+                name: '黄酮类成分',
+                enName: 'Flavonoids',
+                category: '黄酮及黄酮苷类 (中等极性)',
+                catCode: 'flavonoid',
+                color: '#F43F5E',
+                glow: 'rgba(244, 63, 94, 0.55)',
+                formula: 'C₆-C₃-C₆ 色原酮核心',
+                ionMode: '[M-H]⁻ / [M+H]⁺',
+                precursorLabel: '[M-H]⁻ 准分子离子',
+                exactMass: '黄酮母离子簇',
+                massError: '< 1.1 ppm',
+                tR: 8.35,
+                tRRange: '7.2 - 9.5 min',
+                matchScore: 98.2,
+                neutralLoss: 'C环 ¹˒³A⁻/¹˒³B⁻ RDA裂解 / -Gly / -CO (28 Da)',
+                fragments: [
+                    { pos: 0.84, relAbund: 48, code: '[M-H]⁻', label: '黄酮准分子母离子', isPrecursor: true },
+                    { pos: 0.62, relAbund: 100, code: '[Y₀]⁻ / [Y₀-H]•⁻', label: '脱糖苷元基峰 (-162/-146 Da)', loss: '-Glycosyl 糖基丢失' },
+                    { pos: 0.52, relAbund: 62, code: '[Aglycone-H-CO]⁻', label: 'C环羰基消除峰 (-28 Da)', loss: '-CO (28 Da)' },
+                    { pos: 0.33, relAbund: 88, code: '¹˒³A⁻ 诊断离子', label: 'A环RDA特征裂解碎片', loss: 'C环 1,3-键RDA断裂' },
+                    { pos: 0.25, relAbund: 54, code: '¹˒³B⁻ 诊断离子', label: 'B环RDA特征裂解碎片' }
+                ],
+                pathwayDesc: '黄酮类成分在二级质谱中先脱去糖链形成苷元离子 [Y₀]⁻ 及自由基苷元离子 [Y₀-H]•⁻；随后黄酮母核C环发生标志性的 1,3-键逆Diels-Alder (RDA) 环裂解，产生可精准定位A环与B环取代基的 ¹˒³A⁻ 与 ¹˒³B⁻ 特征诊断离子，并伴随羰基丢失 (-CO, 28 Da)。'
+            },
+
+            // 4. 木脂素类 (Lignans) - 中低极性 (10.2 - 12.6 min)
+            {
+                id: 'lignans',
+                name: '木脂素类成分',
+                enName: 'Lignans',
+                category: '双分子苯丙素木脂素类 (中低极性)',
+                catCode: 'lignan',
+                color: '#F59E0B',
+                glow: 'rgba(245, 158, 11, 0.55)',
+                formula: '(C₆-C₃)₂ 四氢呋喃并环核心',
+                ionMode: '[M-H]⁻ / [M+H]⁺',
+                precursorLabel: '[M-H]⁻ 准分子离子',
+                exactMass: '木脂素母离子簇',
+                massError: '< 0.9 ppm',
+                tR: 11.40,
+                tRRange: '10.2 - 12.6 min',
+                matchScore: 97.9,
+                neutralLoss: '-CH₂O (30 Da) / -CH₃• (15 Da) / 四氢呋喃环开环',
+                fragments: [
+                    { pos: 0.78, relAbund: 44, code: '[M-H]⁻', label: '木脂素准分子母离子', isPrecursor: true },
+                    { pos: 0.68, relAbund: 94, code: '[M-H-CH₂O]⁻', label: '羟甲基脱甲醛峰 (-30 Da)', loss: '-CH₂O (30 Da)' },
+                    { pos: 0.60, relAbund: 76, code: '[M-H-CH₃]•⁻', label: '芳环甲氧基甲基自由基丢失 (-15 Da)', loss: '-CH₃• (15 Da)' },
+                    { pos: 0.40, relAbund: 100, code: '[Ar-CH=CH-CH₂]⁻', label: '四氢呋喃环对称断裂基峰', loss: '四氢呋喃环C-O/C-C断裂' },
+                    { pos: 0.29, relAbund: 49, code: '[Ar-O]⁻ 芳环碎片', label: '愈创木基/丁香基诊断单元' }
+                ],
+                pathwayDesc: '木脂素类成分在中高有机相比例下洗脱 (10.2–12.6 min)。其准分子离子在CID下优先发生C-9位羟甲基脱甲醛 (-CH₂O, 30 Da) 及芳环甲氧基自由基断裂 (-CH₃•, 15 Da)，随后四氢呋喃环或骈双四氢呋喃环发生对称开环裂解，产生高丰度苯丙素芳环诊断碎片。'
+            },
+
+            // 5. 三萜类 (Triterpenoids) - 极性小，强C18疏水保留，最晚洗脱 (13.5 - 16.8 min)
+            {
+                id: 'triterpenoids',
+                name: '三萜类成分',
+                enName: 'Triterpenoids',
+                category: '五环三萜及三萜酸类 (低极性/强疏水)',
+                catCode: 'triterpene',
+                color: '#10B981',
+                glow: 'rgba(16, 185, 129, 0.55)',
+                formula: '(C₅H₈)₆ 多环三萜骨架',
+                ionMode: '[M-H]⁻',
+                precursorLabel: '[M-H]⁻ 准分子离子',
+                exactMass: '三萜母离子簇',
+                massError: '< 0.8 ppm',
+                tR: 15.10,
+                tRRange: '13.5 - 16.8 min',
+                matchScore: 99.2,
+                neutralLoss: '-CO₂ (44 Da) / -HCOOH (46 Da) / C环RDA裂解',
+                fragments: [
+                    { pos: 0.88, relAbund: 70, code: '[M-H]⁻', label: '三萜准分子母离子', isPrecursor: true },
+                    { pos: 0.74, relAbund: 100, code: '[M-H-HCOOH]⁻', label: '羧基/内酯脱羧脱甲酸基峰 (-44/-46 Da)', loss: '-CO₂ / -HCOOH' },
+                    { pos: 0.66, relAbund: 60, code: '[M-H-CO₂-H₂O]⁻', label: 'A环羟基脱水峰 (-18 Da)', loss: '-H₂O (18 Da)' },
+                    { pos: 0.46, relAbund: 85, code: '[D/E-Ring RDA]⁻', label: 'C环特征逆Diels-Alder裂解碎片', loss: 'C环不饱和键RDA裂解' },
+                    { pos: 0.31, relAbund: 40, code: '[A/B-Ring]⁻', label: 'A/B环互补骨架碎片离子' }
+                ],
+                pathwayDesc: '三萜类入血成分疏水性最强，与C18碳链发生强烈疏水相互作用，在高乙腈比例下最晚洗脱 (13.5–16.8 min)。在碰撞池中主要发生C-28位羧基或内酯环脱羧 (-CO₂, 44 Da / -HCOOH, 46 Da)、A环羟基脱水 (-H₂O, 18 Da) 以及C环双键诱导的典型逆Diels-Alder (RDA) 裂解。'
+            }
+        ];
+
+        // Stage Metadata
+        const STAGE_INFO = {
+            1: {
+                badge: 'ACT I · 00:00 - 00:12',
+                title: '第一幕：原植物释放与跨膜入血 (Plant Release & Bloodstream Absorption)',
+                desc: '血满草释放酚酸类（紫）、环烯醚萜类（宝蓝）、黄酮类（珊瑚粉）、木脂素类（琥珀金）、三萜类（翠绿）五大结构类型分子，穿透肠上皮磷脂双分子层进入微血管，与红细胞及血浆白蛋白随血流运行。',
+                actionLabel: '释放新一波入血分子'
+            },
+            2: {
+                badge: 'ACT II · 00:12 - 00:25',
+                title: '第二幕：UPLC-C18反相色谱柱梯度分离 (Chromatographic Class Separation)',
+                desc: '除蛋白后的血清进入C18反相色谱柱。随流动相有机相比例升高，五大类入血成分严格按极性差异由强到弱依次洗脱：酚酸类 → 环烯醚萜类 → 黄酮类 → 木脂素类 → 三萜类，同步绘出5组特征色谱峰簇。',
+                actionLabel: '重新进样梯度洗脱'
+            },
+            3: {
+                badge: 'ACT III · 00:25 - 00:38',
+                title: '第三幕：ESI电离与碰撞池CID类别特征裂解 (Class-Specific CID Fragmentation)',
+                desc: '洗脱出的各类别分子经ESI喷针电离、四极杆(MS1)筛选后进入氩气碰撞池。慢动作展示该结构类别标志性的化学键断裂模式（如脱羧-CO₂、脱糖基-Glc、四氢呋喃开环、C环RDA裂解）及诊断子离子生成过程。',
+                actionLabel: '再次触发CID特征裂解'
+            },
+            4: {
+                badge: 'ACT IV · 00:38 - 00:50',
+                title: '第四幕：二级质谱诊断离子筛查与镜像谱库比对 (Diagnostic Mirror Plot Screening)',
+                desc: '上半轴动态升起实测入血二级质谱特征峰，下半轴展开对应结构类别的标准谱库参考谱图。绿色激光束自动扫描比对类别诊断碎片与中性丢失特征，完成五大类入血成分的快速归属筛查。',
+                actionLabel: '重新扫描镜像图谱'
+            }
+        };
+
+        // Global State
+        let currentStage = 1;
+        let selectedMolIndex = 4; // Default: 三萜类 (Triterpenoids)
+        let isPaused = false;
+        let simSpeed = 1.0;
+        let autoDirector = true;
+        let stageElapsed = 0; // seconds in current stage
+        const STAGE_DURATION = 13.5; // seconds per stage in auto mode
+
+        // Canvas & Animation references
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        let cw = 1000, ch = 600;
+        let lastTime = performance.now();
+        let globalTime = 0;
+
+        // Stage 1 Entities
+        let s1Molecules = [];
+        let s1RBCs = [];
+        let s1Proteins = [];
+
+        // Stage 2 Entities
+        let s2TimeMin = 0; // 0 to 17.5 min chromatographic gradient
+        let s2Packets = [];
+        let s2C18Chains = [];
+
+        // Stage 3 Entities
+        let s3CycleTime = 0; // 0 to 8 seconds CID cycle
+        let s3ArgonAtoms = [];
+        let s3Sparks = [];
+
+        // Stage 4 Entities
+        let s4ScanProgress = 0; // 0 to 1.2
+
+        // Video Recording & Cinema Mode State
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecording = false;
+        let isCinemaMode = false;
+
+        // Export High-Bitrate 60fps Video directly from Canvas
+        function toggleCanvasRecording() {
+            const btn = document.getElementById('recordVideoBtn');
+            const dot = document.getElementById('recordDot');
+            const txt = document.getElementById('recordBtnText');
+
+            if (!isRecording) {
+                try {
+                    const stream = canvas.captureStream(60); // 60 FPS smooth stream
+                    let mimeType = 'video/webm;codecs=vp9';
+                    if (!MediaRecorder.isTypeSupported(mimeType)) {
+                        mimeType = 'video/webm';
+                    }
+                    if (MediaRecorder.isTypeSupported('video/mp4')) {
+                        mimeType = 'video/mp4';
+                    }
+
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(stream, {
+                        mimeType,
+                        videoBitsPerSecond: 12000000 // 12 Mbps high clarity for video editing
+                    });
+
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data && e.data.size > 0) {
+                            recordedChunks.push(e.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: mimeType });
+                        const url = URL.createObjectURL(blob);
+                        const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `血满草入血与液质检测动画_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.${ext}`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    };
+
+                    // Start from current stage beginning for clean take
+                    triggerActionPulse();
+                    mediaRecorder.start();
+                    isRecording = true;
+
+                    btn.className = 'px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 border border-rose-300 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-[0_0_18px_rgba(244,63,94,0.7)]';
+                    dot.className = 'w-2 h-2 rounded-full bg-white animate-ping';
+                    txt.textContent = '停止并下载视频';
+                } catch (err) {
+                    txt.textContent = '请使用Chrome/Edge录制';
+                }
+            } else {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+                isRecording = false;
+                btn.className = 'px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/35 border border-rose-500/50 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition shadow-[0_0_12px_rgba(244,63,94,0.25)]';
+                dot.className = 'w-2 h-2 rounded-full bg-rose-400';
+                txt.textContent = '录制视频素材';
+            }
+        }
+
+        // Toggle Clean Cinema Mode for screen recording or presentation
+        function toggleCinemaMode() {
+            isCinemaMode = !isCinemaMode;
+            const header = document.querySelector('header');
+            const sidebar = document.querySelector('aside');
+            const actionBtn = document.getElementById('stageActionBtn');
+            const exitBtn = document.getElementById('exitCinemaBtn');
+
+            if (isCinemaMode) {
+                header.classList.add('hidden');
+                sidebar.classList.add('hidden');
+                actionBtn.classList.add('hidden');
+                exitBtn.classList.remove('hidden');
+            } else {
+                header.classList.remove('hidden');
+                sidebar.classList.remove('hidden');
+                actionBtn.classList.remove('hidden');
+                exitBtn.classList.add('hidden');
+            }
+            setTimeout(resizeCanvas, 50);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isCinemaMode) {
+                toggleCinemaMode();
+            }
+        });
+
+        // Initialize UI & Entities
+        function initApp() {
+            renderMoleculeSidebar();
+            selectMolecule(selectedMolIndex, false);
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            initStage1Entities();
+            initStage2Entities();
+            initStage3Entities();
+
+            // Canvas click interaction
+            canvas.addEventListener('click', handleCanvasClick);
+
+            requestAnimationFrame(mainLoop);
+        }
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            cw = rect.width;
+            ch = rect.height - 38; // subtract bottom legend bar height
+            canvas.width = cw * dpr;
+            canvas.height = ch * dpr;
+            canvas.style.width = cw + 'px';
+            canvas.style.height = ch + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            initStage2Entities();
+        }
+
+        // Render Right Sidebar 5 Structural Classes
+        function renderMoleculeSidebar() {
+            const container = document.getElementById('moleculeListContainer');
+            container.innerHTML = '';
+
+            MOLECULES.forEach((mol, idx) => {
+                const isSelected = idx === selectedMolIndex;
+                const card = document.createElement('div');
+                card.className = `mol-card cursor-pointer rounded-lg p-3 border transition ${
+                    isSelected ? 'selected border-sky-400' : 'border-slate-800/90 bg-slate-900/50'
+                }`;
+                card.onclick = () => selectMolecule(idx, true);
+
+                const diagCodes = mol.fragments
+                    .filter(f => !f.isPrecursor)
+                    .slice(0, 2)
+                    .map(f => f.code)
+                    .join(' , ');
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:${mol.color}; box-shadow: 0 0 10px ${mol.color}"></span>
+                            <span class="text-xs font-bold text-white">${idx + 1}. ${mol.name}</span>
+                            <span class="text-[11px] text-slate-400">${mol.enName}</span>
+                        </div>
+                        <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">tR ${mol.tRRange}</span>
+                    </div>
+                    <div class="text-[11px] text-slate-300 mt-1.5 flex items-center justify-between">
+                        <span>母核: <span class="text-slate-200">${mol.formula}</span></span>
+                        <span class="text-emerald-400 mono font-semibold">Match ${mol.matchScore}%</span>
+                    </div>
+                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-800/70 text-[10px] mono">
+                        <span class="text-slate-400">特征裂解: <span style="color:${mol.color}">${diagCodes}</span></span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectMolecule(idx, resetStageAnim = true) {
+            selectedMolIndex = idx;
+            const mol = MOLECULES[idx];
+            renderMoleculeSidebar();
+
+            // Update Top HUD Telemetry
+            const dot = document.getElementById('hudMolColorDot');
+            dot.style.background = mol.color;
+            dot.style.boxShadow = `0 0 12px ${mol.color}`;
+            document.getElementById('hudMolName').textContent = `${mol.name} (${mol.enName})`;
+            document.getElementById('hudMolFormula').textContent = mol.formula;
+            document.getElementById('hudMolFormula').style.color = mol.color;
+            document.getElementById('hudMolTr').textContent = `tR: ${mol.tRRange}`;
+            document.getElementById('hudMolPrecursor').textContent = `${mol.ionMode} (${mol.exactMass})`;
+            document.getElementById('hudMolError').textContent = `Δm ${mol.massError}`;
+
+            // Update Bottom-Right Mechanism Card
+            document.getElementById('detailMatchScore').textContent = `Class Match: ${mol.matchScore}%`;
+            document.getElementById('detailPathwayTitle').textContent = `${mol.name} (${mol.enName}) · ${mol.category}`;
+            document.getElementById('detailPathwayDesc').textContent = mol.pathwayDesc;
+            document.getElementById('detailNeutralLoss').textContent = `诊断丢失: ${mol.neutralLoss}`;
+            document.getElementById('detailIonMode').textContent = mol.ionMode;
+
+            if (resetStageAnim) {
+                if (currentStage === 3) {
+                    s3CycleTime = 0;
+                } else if (currentStage === 4) {
+                    s4ScanProgress = 0;
+                }
+            }
+        }
+
+        function setStage(stageNum) {
+            currentStage = stageNum;
+            stageElapsed = 0;
+
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById('stageBtn' + i);
+                if (i === stageNum) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+
+            const info = STAGE_INFO[stageNum];
+            document.getElementById('hudStageBadge').textContent = info.badge;
+            document.getElementById('hudStageTitle').textContent = info.title;
+            document.getElementById('hudStageDesc').textContent = info.desc;
+            document.getElementById('stageActionBtn').textContent = info.actionLabel;
+
+            // Reset stage specific timers for fresh view
+            if (stageNum === 2 && s2TimeMin > 16.5) s2TimeMin = 0;
+            if (stageNum === 3) s3CycleTime = 0;
+            if (stageNum === 4) s4ScanProgress = 0;
+        }
+
+        function triggerActionPulse() {
+            stageElapsed = 0;
+            if (currentStage === 1) initStage1Entities();
+            if (currentStage === 2) { s2TimeMin = 0; initStage2Entities(); }
+            if (currentStage === 3) s3CycleTime = 0;
+            if (currentStage === 4) s4ScanProgress = 0;
+        }
+
+        function toggleAutoDirector() {
+            autoDirector = !autoDirector;
+            const dot = document.getElementById('autoDirectorDot');
+            const txt = document.getElementById('autoDirectorText');
+            if (autoDirector) {
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                txt.textContent = '自动连播四幕: 开';
+            } else {
+                dot.className = 'w-2 h-2 rounded-full bg-slate-500';
+                txt.textContent = '自动连播四幕: 关';
+            }
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            const btn = document.getElementById('playPauseBtn');
+            btn.textContent = isPaused ? '继续播放' : '暂停';
+            btn.className = isPaused
+                ? 'px-2.5 py-1.5 rounded-lg bg-amber-500/30 border border-amber-400 text-amber-200 text-xs font-medium transition'
+                : 'px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-medium transition';
+        }
+
+        function setSpeed(spd) {
+            simSpeed = spd;
+            ['05', '1', '2'].forEach(k => {
+                const el = document.getElementById('spd' + k);
+                el.className = 'px-2 py-1 rounded text-slate-400 hover:text-white';
+            });
+            const activeKey = spd === 0.5 ? '05' : (spd === 1 ? '1' : '2');
+            document.getElementById('spd' + activeKey).className = 'px-2 py-1 rounded bg-sky-500/30 text-sky-300 font-semibold';
+        }
+
+        // Helper: Draw Scientific Chemical Structure Icon on Canvas
+        function drawChemicalSkeleton(ctx, x, y, scale, catCode, color, rotation = 0, alpha = 1) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            ctx.scale(scale, scale);
+            ctx.globalAlpha = alpha;
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.2;
+            ctx.fillStyle = color;
+
+            // Outer glow
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 10;
+
+            const drawHex = (cx, cy, r) => {
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const ang = (i * Math.PI) / 3 + Math.PI / 6;
+                    const px = cx + r * Math.cos(ang);
+                    const py = cy + r * Math.sin(ang);
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            };
+
+            if (catCode === 'triterpene') {
+                // Five fused rings (Pentacyclic triterpenoid skeleton)
+                const r = 8;
+                drawHex(-18, 4, r);
+                drawHex(-5, 4, r);
+                drawHex(2, -7, r);
+                drawHex(15, -7, r);
+                drawHex(22, -18, r * 0.85);
+                // Functional group nodes (-COOH, -OH)
+                ctx.beginPath();
+                ctx.arc(-26, 9, 2.5, 0, Math.PI * 2);
+                ctx.arc(16, 3, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (catCode === 'lignan') {
+                // Two aromatic rings linked by furan bridge
+                const r = 8.5;
+                drawHex(-16, 0, r);
+                drawHex(16, 0, r);
+                ctx.beginPath();
+                ctx.moveTo(-8, 0);
+                ctx.lineTo(0, -6);
+                ctx.lineTo(8, 0);
+                ctx.lineTo(0, 6);
+                ctx.closePath();
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(-24, -4, 2.3, 0, Math.PI * 2);
+                ctx.arc(24, 4, 2.3, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (catCode === 'flavonoid') {
+                // C6-C3-C6 Flavonoid Chromone + B-ring scaffold
+                const r = 8.5;
+                drawHex(-14, 0, r); // A-ring
+                drawHex(-1, 0, r);  // C-ring
+                // Link to B-ring
+                ctx.beginPath();
+                ctx.moveTo(6, -3);
+                ctx.lineTo(13, -7);
+                ctx.stroke();
+                drawHex(20, -9, r * 0.9); // B-ring
+                // Carbonyl & hydroxyl nodes
+                ctx.beginPath();
+                ctx.arc(-1, 9, 2.4, 0, Math.PI * 2);
+                ctx.arc(-22, -5, 2.4, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (catCode === 'phenolic') {
+                // Phenolic Acid C6-C3 / C6-C1 scaffold with carboxylic side chain
+                const r = 9;
+                drawHex(-6, 0, r);
+                // Propenoic / Carboxylic acid side chain
+                ctx.beginPath();
+                ctx.moveTo(2, -4);
+                ctx.lineTo(12, -8);
+                ctx.lineTo(18, -2);
+                ctx.stroke();
+                // Phenolic -OH and -COOH nodes
+                ctx.beginPath();
+                ctx.arc(-15, -5, 2.5, 0, Math.PI * 2);
+                ctx.arc(-15, 5, 2.5, 0, Math.PI * 2);
+                ctx.arc(18, -2, 2.8, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                // Iridoid bicyclic cyclopenta[c]pyran + glycoside ring
+                const r = 8.5;
+                drawHex(-10, -2, r);
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    const ang = (i * 2 * Math.PI) / 5;
+                    const px = 3 + 7.5 * Math.cos(ang);
+                    const py = -2 + 7.5 * Math.sin(ang);
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                // Glycosidic bridge
+                ctx.beginPath();
+                ctx.moveTo(-18, 2);
+                ctx.lineTo(-25, 8);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(0, -10, 2.3, 0, Math.PI * 2);
+                ctx.arc(-25, 8, 2.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        // ============================================================================
+        // STAGE 1: 血满草释放与跨膜入血 (Bloodstream Absorption)
+        // ============================================================================
+        function initStage1Entities() {
+            s1Molecules = [];
+            s1RBCs = [];
+            s1Proteins = [];
+
+            // Create 27 phytochemical molecules across the 9 indicator compounds
+            for (let i = 0; i < 27; i++) {
+                const molIdx = i % MOLECULES.length;
+                const mol = MOLECULES[molIdx];
+                s1Molecules.push({
+                    molIdx,
+                    mol,
+                    x: 80 + Math.random() * (cw * 0.8),
+                    y: 130 + Math.random() * (ch - 200),
+                    vx: 45 + Math.random() * 35,
+                    vy: (Math.random() - 0.5) * 18,
+                    rot: Math.random() * Math.PI * 2,
+                    vRot: (Math.random() - 0.5) * 1.2,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+
+            // Create Red Blood Cells (RBCs) in right vessel zone
+            for (let i = 0; i < 16; i++) {
+                s1RBCs.push({
+                    x: cw * 0.42 + Math.random() * (cw * 0.55),
+                    y: 135 + Math.random() * (ch - 205),
+                    r: 18 + Math.random() * 10,
+                    vx: 28 + Math.random() * 22,
+                    tilt: (Math.random() - 0.5) * 0.5,
+                    depth: 0.4 + Math.random() * 0.6
+                });
+            }
+
+            // Create Endogenous Plasma Proteins (Albumin)
+            for (let i = 0; i < 14; i++) {
+                s1Proteins.push({
+                    x: cw * 0.42 + Math.random() * (cw * 0.55),
+                    y: 130 + Math.random() * (ch - 195),
+                    r: 8 + Math.random() * 6,
+                    vx: 20 + Math.random() * 15,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        function renderStage1(dt) {
+            const membraneX = cw * 0.36;
+            const vesselTop = 105;
+            const vesselBot = ch - 45;
+
+            // 1. Left Zone: Sambucus adnata Botanical Tissue
+            const plantGrad = ctx.createLinearGradient(0, vesselTop, membraneX, vesselBot);
+            plantGrad.addColorStop(0, 'rgba(6, 78, 59, 0.25)');
+            plantGrad.addColorStop(1, 'rgba(15, 23, 42, 0.1)');
+            ctx.fillStyle = plantGrad;
+            ctx.fillRect(20, vesselTop, membraneX - 20, vesselBot - vesselTop);
+
+            // Draw Botanical Leaf & Red Berries Silhouette of Sambucus adnata
+            ctx.save();
+            ctx.translate(cw * 0.14, (vesselTop + vesselBot) * 0.52);
+            // Glowing aura
+            const leafGlow = ctx.createRadialGradient(0, 0, 10, 0, 0, 130);
+            leafGlow.addColorStop(0, 'rgba(16, 185, 129, 0.22)');
+            leafGlow.addColorStop(1, 'rgba(16, 185, 129, 0)');
+            ctx.fillStyle = leafGlow;
+            ctx.beginPath();
+            ctx.arc(0, 0, 130, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Serrated pinnate leaflets
+            ctx.strokeStyle = 'rgba(52, 211, 153, 0.65)';
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.16)';
+            ctx.lineWidth = 2;
+            const leafAngles = [-0.6, -0.25, 0.1, 0.45, -0.9];
+            leafAngles.forEach((ang, idx) => {
+                ctx.save();
+                ctx.rotate(ang + Math.sin(globalTime * 1.5 + idx) * 0.03);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.quadraticCurveTo(38, -22, 85, 0);
+                ctx.quadraticCurveTo(38, 22, 0, 0);
+                ctx.fill();
+                ctx.stroke();
+                // central vein
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(72, 0);
+                ctx.strokeStyle = 'rgba(110, 231, 183, 0.45)';
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // Red berry cluster (血满草特征红果)
+            const berryCoords = [
+                [15, -45], [28, -38], [6, -34], [20, -26], [34, -25], [12, -55], [26, -52]
+            ];
+            berryCoords.forEach(([bx, by], bIdx) => {
+                const pulse = 5.5 + Math.sin(globalTime * 3 + bIdx) * 0.8;
+                ctx.beginPath();
+                ctx.arc(bx, by, pulse, 0, Math.PI * 2);
+                ctx.fillStyle = '#F43F5E';
+                ctx.shadowColor = '#F43F5E';
+                ctx.shadowBlur = 12;
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = '#A7F3D0';
+            ctx.font = 'bold 13px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('血满草 (Sambucus adnata)', 0, 95);
+            ctx.fillStyle = '#94A3B8';
+            ctx.font = '11px JetBrains Mono, monospace';
+            ctx.fillText('原植物提取物 · 释放多类小分子', 0, 113);
+            ctx.restore();
+
+            // 2. Right Zone: Micro-Blood Vessel Artery
+            const vesselGrad = ctx.createLinearGradient(membraneX, vesselTop, membraneX, vesselBot);
+            vesselGrad.addColorStop(0, 'rgba(127, 29, 29, 0.55)');
+            vesselGrad.addColorStop(0.15, 'rgba(69, 10, 10, 0.35)');
+            vesselGrad.addColorStop(0.5, 'rgba(45, 10, 20, 0.25)');
+            vesselGrad.addColorStop(0.85, 'rgba(69, 10, 10, 0.35)');
+            vesselGrad.addColorStop(1, 'rgba(127, 29, 29, 0.55)');
+            ctx.fillStyle = vesselGrad;
+            ctx.fillRect(membraneX, vesselTop, cw - membraneX - 20, vesselBot - vesselTop);
+
+            // Endothelial Vessel Walls
+            ctx.strokeStyle = 'rgba(248, 113, 113, 0.45)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(membraneX, vesselTop);
+            ctx.lineTo(cw - 20, vesselTop);
+            ctx.moveTo(membraneX, vesselBot);
+            ctx.lineTo(cw - 20, vesselBot);
+            ctx.stroke();
+
+            // 3. Phospholipid Bilayer Membrane Barrier at membraneX
+            ctx.save();
+            const numLipids = Math.floor((vesselBot - vesselTop) / 16);
+            for (let i = 0; i <= numLipids; i++) {
+                const ly = vesselTop + i * 16;
+                const wave = Math.sin(globalTime * 2.5 + i * 0.5) * 4;
+                const mx = membraneX + wave;
+
+                // Hydrophobic tails
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(mx - 10, ly);
+                ctx.lineTo(mx + 10, ly);
+                ctx.stroke();
+
+                // Left & Right Hydrophilic heads
+                ctx.fillStyle = '#38BDF8';
+                ctx.beginPath();
+                ctx.arc(mx - 11, ly, 3.2, 0, Math.PI * 2);
+                ctx.arc(mx + 11, ly, 3.2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Membrane label badge
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.fillRect(membraneX - 68, vesselBot - 36, 136, 24);
+            ctx.strokeRect(membraneX - 68, vesselBot - 36, 136, 24);
+            ctx.fillStyle = '#7DD3FC';
+            ctx.font = '11px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('肠上皮/血管内皮磷脂双分子层', membraneX, vesselBot - 20);
+            ctx.restore();
+
+            // 4. Update & Draw Red Blood Cells (RBCs)
+            s1RBCs.forEach(rbc => {
+                if (!isPaused) {
+                    rbc.x += rbc.vx * dt * simSpeed;
+                    if (rbc.x > cw - 30) rbc.x = membraneX + 25;
+                }
+                ctx.save();
+                ctx.translate(rbc.x, rbc.y);
+                ctx.rotate(rbc.tilt + Math.sin(globalTime + rbc.x * 0.01) * 0.1);
+                ctx.globalAlpha = rbc.depth * 0.65;
+
+                // Biconcave disc shading
+                const rGrad = ctx.createRadialGradient(0, 0, rbc.r * 0.15, 0, 0, rbc.r);
+                rGrad.addColorStop(0, '#450A0A');
+                rGrad.addColorStop(0.55, '#DC2626');
+                rGrad.addColorStop(1, '#7F1D1D');
+                ctx.fillStyle = rGrad;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, rbc.r, rbc.r * 0.68, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 5. Update & Draw Plasma Proteins (Albumin)
+            s1Proteins.forEach(p => {
+                if (!isPaused) {
+                    p.x += p.vx * dt * simSpeed;
+                    if (p.x > cw - 30) p.x = membraneX + 20;
+                }
+                ctx.save();
+                ctx.fillStyle = 'rgba(148, 163, 184, 0.22)';
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.38)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y + Math.sin(globalTime * 2 + p.phase) * 4, p.r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // 6. Update & Draw Phytochemical Molecules (crossing membrane & flowing in blood)
+            s1Molecules.forEach(m => {
+                if (!isPaused) {
+                    m.x += m.vx * dt * simSpeed;
+                    m.y += Math.sin(globalTime * 2 + m.phase) * 12 * dt * simSpeed;
+                    m.rot += m.vRot * dt * simSpeed;
+
+                    if (m.x > cw - 35) {
+                        m.x = 75 + Math.random() * 90;
+                        m.y = vesselTop + 35 + Math.random() * (vesselBot - vesselTop - 70);
+                    }
+                }
+
+                const isSelected = m.molIdx === selectedMolIndex;
+                // Transmembrane crossing ripple effect
+                if (Math.abs(m.x - membraneX) < 22) {
+                    ctx.save();
+                    ctx.strokeStyle = m.mol.color;
+                    ctx.globalAlpha = 1 - Math.abs(m.x - membraneX) / 22;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(membraneX, m.y, 18, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                // Draw molecule structure
+                const scale = isSelected ? 1.15 : 0.78;
+                const alpha = isSelected ? 1.0 : 0.72;
+                drawChemicalSkeleton(ctx, m.x, m.y, scale, m.mol.catCode, m.mol.color, m.rot, alpha);
+
+                // Label focused compound class in bloodstream
+                if (isSelected && m.x > membraneX + 30) {
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                    ctx.strokeStyle = m.mol.color;
+                    ctx.lineWidth = 1;
+                    const labelW = 138;
+                    ctx.fillRect(m.x - labelW / 2, m.y - 34, labelW, 18);
+                    ctx.strokeRect(m.x - labelW / 2, m.y - 34, labelW, 18);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 10px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${m.mol.name} (${m.mol.enName})`, m.x, m.y - 21);
+                    ctx.restore();
+                }
+            });
+
+            // Bloodstream Zone Title
+            ctx.fillStyle = 'rgba(254, 202, 202, 0.85)';
+            ctx.font = 'bold 13px Inter, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText('动脉微血管循环 (Arterial Bloodstream) · 五大类入血成分与血浆基质共存', cw - 36, vesselBot - 16);
+        }
+
+        // ============================================================================
+        // STAGE 2: UPLC-C18反相色谱柱梯度分离 + 实时TIC总离子流图
+        // ============================================================================
+        function initStage2Entities() {
+            s2C18Chains = [];
+            const colLeft = 90;
+            const colRight = cw - 70;
+            const numChains = Math.floor((colRight - colLeft) / 14);
+            for (let i = 0; i < numChains; i++) {
+                s2C18Chains.push({
+                    x: colLeft + i * 14,
+                    phase: i * 0.35,
+                    len: 22 + (i % 3) * 5
+                });
+            }
+        }
+
+        function renderStage2(dt) {
+            if (!isPaused) {
+                s2TimeMin += dt * 1.45 * simSpeed;
+                if (s2TimeMin > 17.5) s2TimeMin = 0;
+            }
+
+            const padL = 85;
+            const padR = cw - 65;
+            const plotW = padR - padL;
+
+            // --- TOP HALF: Real-time UPLC Total Ion Chromatogram (TIC) ---
+            const ticTop = 108;
+            const ticBot = ch * 0.50;
+            const ticH = ticBot - ticTop;
+
+            // TIC Panel Background
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+            ctx.lineWidth = 1;
+            ctx.fillRect(padL, ticTop, plotW, ticH);
+            ctx.strokeRect(padL, ticTop, plotW, ticH);
+
+            // Grid lines & Retention time axis (0 - 17 min)
+            ctx.font = '10px JetBrains Mono, monospace';
+            ctx.fillStyle = '#94A3B8';
+            ctx.textAlign = 'center';
+            for (let t = 0; t <= 17; t += 2) {
+                const tx = padL + (t / 17) * plotW;
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
+                ctx.beginPath();
+                ctx.moveTo(tx, ticTop);
+                ctx.lineTo(tx, ticBot);
+                ctx.stroke();
+                ctx.fillText(`${t} min`, tx, ticBot + 14);
+            }
+
+            // Mobile phase gradient B% curve (Acetonitrile 10% -> 95%)
+            ctx.save();
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(padL, ticBot - ticH * 0.12);
+            ctx.lineTo(padL + (s2TimeMin / 17) * plotW, ticBot - ticH * (0.12 + 0.72 * (s2TimeMin / 17)));
+            ctx.stroke();
+            ctx.restore();
+
+            // Helper to compute clean single Gaussian peak signal for each of the 5 structural classes
+            const getClassSinglePeakSignal = (t, m, isSel) => {
+                const peakH = isSel ? 0.85 : 0.64;
+                return Math.exp(-Math.pow((t - m.tR) / 0.24, 2)) * peakH;
+            };
+
+            // Draw TIC Chromatogram Curve up to current s2TimeMin
+            ctx.save();
+            ctx.beginPath();
+            const baselineY = ticBot - 16;
+            ctx.moveTo(padL, baselineY);
+
+            const maxDrawTime = Math.min(s2TimeMin, 17);
+            const steps = Math.max(2, Math.floor(maxDrawTime * 28));
+            for (let s = 0; s <= steps; s++) {
+                const t = (s / steps) * maxDrawTime;
+                const x = padL + (t / 17) * plotW;
+
+                // Dead volume endogenous matrix peak at t = 1.1 min
+                let signal = Math.exp(-Math.pow((t - 1.1) / 0.28, 2)) * 0.26;
+
+                // Sum of 5 Structural Class Single Gaussian Peaks
+                MOLECULES.forEach((m, idx) => {
+                    signal += getClassSinglePeakSignal(t, m, idx === selectedMolIndex);
+                });
+
+                const y = baselineY - Math.min(signal, 0.92) * (ticH - 28);
+                ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#38BDF8';
+            ctx.lineWidth = 2.2;
+            ctx.shadowColor = '#38BDF8';
+            ctx.shadowBlur = 8;
+            ctx.stroke();
+            ctx.restore();
+
+            // Highlight Individual Colored Class Single Peaks & Labels as they elute
+            MOLECULES.forEach((m, idx) => {
+                if (s2TimeMin >= m.tR - 0.5) {
+                    const px = padL + (m.tR / 17) * plotW;
+                    const isSel = idx === selectedMolIndex;
+                    const peakH = (isSel ? 0.85 : 0.64) * (ticH - 28);
+                    const py = baselineY - peakH;
+
+                    // Fill under specific Class EIC Single Gaussian Peak
+                    ctx.save();
+                    ctx.beginPath();
+                    for (let dtStep = -0.65; dtStep <= 0.65; dtStep += 0.05) {
+                        const t = m.tR + dtStep;
+                        if (t <= s2TimeMin) {
+                            const gx = padL + (t / 17) * plotW;
+                            const gy = baselineY - getClassSinglePeakSignal(t, m, isSel) * (ticH - 28);
+                            if (dtStep === -0.65) ctx.moveTo(gx, baselineY);
+                            ctx.lineTo(gx, gy);
+                        }
+                    }
+                    ctx.lineTo(padL + (Math.min(s2TimeMin, m.tR + 0.65) / 17) * plotW, baselineY);
+                    ctx.closePath();
+                    ctx.fillStyle = m.color;
+                    ctx.globalAlpha = isSel ? 0.45 : 0.22;
+                    ctx.fill();
+                    ctx.restore();
+
+                    // Peak Apex Marker & Class Label
+                    ctx.save();
+                    ctx.fillStyle = isSel ? '#FFFFFF' : m.color;
+                    ctx.font = isSel ? 'bold 11px Inter, sans-serif' : 'bold 10px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${m.name} (${m.tRRange})`, px, py - 10);
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, isSel ? 4.5 : 3.2, 0, Math.PI * 2);
+                    ctx.fillStyle = m.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            });
+
+            // TIC Title & Current Gradient Readout
+            ctx.fillStyle = '#E2E8F0';
+            ctx.font = 'bold 12px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('五大结构类别提取离子流色谱图 (UPLC-MS Class EICs · 按极性梯度洗脱)', padL + 12, ticTop + 20);
+            const acnPct = Math.min(95, Math.round(10 + (s2TimeMin / 17) * 85));
+            ctx.fillStyle = '#38BDF8';
+            ctx.font = '11px JetBrains Mono, monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText(`洗脱时间 tR = ${s2TimeMin.toFixed(2)} min | 流动相有机相比例 (B%): ${acnPct}%`, padR - 12, ticTop + 20);
+
+            // --- BOTTOM HALF: UPLC C18 Reverse-Phase Column Cross-Section ---
+            const colTop = ch * 0.58;
+            const colBot = ch - 46;
+            const colH = colBot - colTop;
+            const colMidY = (colTop + colBot) / 2;
+
+            // Quartz Column Barrel
+            const colGrad = ctx.createLinearGradient(0, colTop, 0, colBot);
+            colGrad.addColorStop(0, 'rgba(30, 41, 59, 0.9)');
+            colGrad.addColorStop(0.2, 'rgba(15, 23, 42, 0.45)');
+            colGrad.addColorStop(0.5, 'rgba(30, 58, 138, 0.25)');
+            colGrad.addColorStop(0.8, 'rgba(15, 23, 42, 0.45)');
+            colGrad.addColorStop(1, 'rgba(30, 41, 59, 0.9)');
+            ctx.fillStyle = colGrad;
+            ctx.fillRect(padL, colTop, plotW, colH);
+
+            ctx.strokeStyle = '#64748B';
+            ctx.lineWidth = 2.5;
+            ctx.strokeRect(padL, colTop, plotW, colH);
+
+            // C18 Octadecyl Silane Hydrophobic Chains waving on top & bottom inner walls
+            ctx.save();
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.42)';
+            ctx.lineWidth = 1.6;
+            s2C18Chains.forEach(c => {
+                if (c.x < padL + 8 || c.x > padR - 8) return;
+                const sway = Math.sin(globalTime * 4 + c.phase) * 7 + 5;
+                // Top wall C18 chain
+                ctx.beginPath();
+                ctx.moveTo(c.x, colTop);
+                ctx.quadraticCurveTo(c.x + sway, colTop + c.len * 0.6, c.x + sway * 1.3, colTop + c.len);
+                ctx.stroke();
+
+                // Bottom wall C18 chain
+                ctx.beginPath();
+                ctx.moveTo(c.x, colBot);
+                ctx.quadraticCurveTo(c.x + sway, colBot - c.len * 0.6, c.x + sway * 1.3, colBot - c.len);
+                ctx.stroke();
+            });
+            ctx.restore();
+
+            // Endogenous Matrix Impurity Plug (grey particles eluting rapidly at 1.2 min)
+            const impProgress = s2TimeMin / 1.2;
+            if (impProgress <= 1.25) {
+                const impX = padL + Math.min(impProgress, 1.15) * plotW;
+                for (let k = -2; k <= 2; k++) {
+                    ctx.fillStyle = 'rgba(148, 163, 184, 0.55)';
+                    ctx.beginPath();
+                    ctx.arc(impX + k * 8, colMidY + Math.sin(k * 2 + globalTime) * 18, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Draw the 9 Indicator Compound Bands migrating through the C18 Column
+            MOLECULES.forEach((m, idx) => {
+                // Progress along column: reaches outlet (progress = 1.0) exactly when s2TimeMin === m.tR
+                const progress = Math.pow(Math.min(s2TimeMin / m.tR, 1.15), m.catCode === 'triterpene' ? 1.45 : 1.05);
+                const bandX = padL + progress * plotW;
+                const isSel = idx === selectedMolIndex;
+
+                // Vertical lane offset inside column
+                // Triterpenes hug closer to the C18 hydrophobic wall chains until organic solvent % is high
+                let laneY = colMidY + ((idx % 3) - 1) * (colH * 0.22);
+                if (m.catCode === 'triterpene' && progress < 0.75) {
+                    laneY = (idx % 2 === 0) ? colTop + 26 : colBot - 26;
+                }
+
+                if (progress <= 1.08) {
+                    // Draw 3 clustered molecules per compound band
+                    for (let c = -1; c <= 1; c++) {
+                        const mx = bandX + c * 11;
+                        const my = laneY + Math.sin(globalTime * 3 + idx + c) * 5;
+                        drawChemicalSkeleton(ctx, mx, my, isSel ? 0.85 : 0.62, m.catCode, m.color, globalTime + c, isSel ? 1 : 0.8);
+                    }
+
+                    // Band tag
+                    if (isSel || Math.abs(s2TimeMin - m.tR) < 1.2) {
+                        ctx.save();
+                        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+                        ctx.strokeStyle = m.color;
+                        ctx.lineWidth = 1;
+                        ctx.fillRect(bandX - 38, laneY - 26, 76, 15);
+                        ctx.strokeRect(bandX - 38, laneY - 26, 76, 15);
+                        ctx.fillStyle = '#FFF';
+                        ctx.font = '10px Inter, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(m.name, bandX, laneY - 15);
+                        ctx.restore();
+                    }
+                }
+
+                // Laser vertical link when eluting at column outlet (progress ~ 1.0)
+                if (Math.abs(s2TimeMin - m.tR) < 0.28) {
+                    const peakX = padL + (m.tR / 17) * plotW;
+                    ctx.save();
+                    ctx.strokeStyle = m.color;
+                    ctx.setLineDash([3, 3]);
+                    ctx.lineWidth = 1.8;
+                    ctx.beginPath();
+                    ctx.moveTo(padR, colMidY);
+                    ctx.lineTo(peakX, ticBot);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            });
+
+            // Column Labels
+            ctx.fillStyle = '#94A3B8';
+            ctx.font = '11px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('UPLC进样端 (Injector)', padL, colBot + 18);
+            ctx.textAlign = 'center';
+            ctx.fillText('反相 C18 十八烷基硅烷固定相剖面 (疏水相互作用梯度洗脱)', (padL + padR) / 2, colBot + 18);
+            ctx.textAlign = 'right';
+            ctx.fillText('流向 ESI-MS 质谱离子源 →', padR, colBot + 18);
+        }
+
+        // ============================================================================
+        // STAGE 3: ESI电喷雾电离与碰撞池 (CID) 分子键断裂慢动作动画
+        // ============================================================================
+        function initStage3Entities() {
+            s3ArgonAtoms = [];
+            for (let i = 0; i < 28; i++) {
+                s3ArgonAtoms.push({
+                    rx: Math.random(),
+                    ry: Math.random(),
+                    vx: (Math.random() - 0.5) * 60,
+                    vy: (Math.random() - 0.5) * 60,
+                    r: 3 + Math.random() * 2.5
+                });
+            }
+        }
+
+        function renderStage3(dt) {
+            if (!isPaused) {
+                s3CycleTime += dt * simSpeed;
+                if (s3CycleTime > 8.2) s3CycleTime = 0;
+            }
+
+            const mol = MOLECULES[selectedMolIndex];
+            const midY = ch * 0.54;
+
+            // Zones layout:
+            // [1. ESI Needle: 40..210] -> [2. Q1 Quadrupole: 230..460] -> [3. CID Collision Cell: 480..cw-60]
+            const esiRight = cw * 0.20;
+            const q1Left = cw * 0.22;
+            const q1Right = cw * 0.44;
+            const cidLeft = cw * 0.47;
+            const cidRight = cw - 55;
+
+            // 1. Draw ESI Spray Needle & Taylor Cone
+            ctx.save();
+            ctx.fillStyle = '#475569';
+            ctx.strokeStyle = '#94A3B8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(35, midY - 14);
+            ctx.lineTo(esiRight - 45, midY - 14);
+            ctx.lineTo(esiRight - 20, midY - 4);
+            ctx.lineTo(esiRight - 20, midY + 4);
+            ctx.lineTo(esiRight - 45, midY + 14);
+            ctx.lineTo(35, midY + 14);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Nebulizing gas & desolvation plume
+            const plumeGrad = ctx.createRadialGradient(esiRight - 20, midY, 2, esiRight + 20, midY, 75);
+            plumeGrad.addColorStop(0, mol.color);
+            plumeGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.18)');
+            plumeGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+            ctx.fillStyle = plumeGrad;
+            ctx.beginPath();
+            ctx.moveTo(esiRight - 20, midY);
+            ctx.lineTo(q1Left + 10, midY - 55);
+            ctx.lineTo(q1Left + 10, midY + 55);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#E2E8F0';
+            ctx.font = 'bold 12px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('① ESI 电喷雾电离源', (35 + esiRight) / 2, midY - 68);
+            ctx.fillStyle = '#94A3B8';
+            ctx.font = '11px JetBrains Mono, monospace';
+            ctx.fillText('去溶剂化雾化带电', (35 + esiRight) / 2, midY + 75);
+            ctx.restore();
+
+            // 2. Draw Q1 Quadrupole Mass Filter
+            ctx.save();
+            const rodH = 16;
+            const rodGap = 52;
+            ctx.fillStyle = 'rgba(51, 65, 85, 0.85)';
+            ctx.strokeStyle = '#64748B';
+            // Top & Bottom Quadrupole Rods
+            ctx.fillRect(q1Left, midY - rodGap - rodH, q1Right - q1Left, rodH);
+            ctx.strokeRect(q1Left, midY - rodGap - rodH, q1Right - q1Left, rodH);
+            ctx.fillRect(q1Left, midY + rodGap, q1Right - q1Left, rodH);
+            ctx.strokeRect(q1Left, midY + rodGap, q1Right - q1Left, rodH);
+
+            // RF / DC Sine Electromagnetic Wave inside Q1
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            for (let x = q1Left; x <= q1Right; x += 4) {
+                const wy = midY + Math.sin((x - q1Left) * 0.08 - globalTime * 8) * (rodGap - 10);
+                if (x === q1Left) ctx.moveTo(x, wy);
+                else ctx.lineTo(x, wy);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = '#E2E8F0';
+            ctx.font = 'bold 12px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('② 四极杆质量分析器 (MS1)', (q1Left + q1Right) / 2, midY - rodGap - 28);
+            ctx.fillStyle = '#38BDF8';
+            ctx.font = '11px JetBrains Mono, monospace';
+            ctx.fillText(`筛选类别母离子: ${mol.precursorLabel}`, (q1Left + q1Right) / 2, midY + rodGap + 35);
+            ctx.restore();
+
+            // 3. Draw CID Collision Cell Chamber
+            const cellTop = midY - 125;
+            const cellBot = midY + 125;
+            ctx.save();
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.fillRect(cidLeft, cellTop, cidRight - cidLeft, cellBot - cellTop);
+            ctx.strokeRect(cidLeft, cellTop, cidRight - cidLeft, cellBot - cellTop);
+
+            // Argon Inert Gas Atoms floating in Collision Cell
+            s3ArgonAtoms.forEach(ar => {
+                const ax = cidLeft + 20 + ((ar.rx * (cidRight - cidLeft - 40) + globalTime * ar.vx) % (cidRight - cidLeft - 40) + (cidRight - cidLeft - 40)) % (cidRight - cidLeft - 40);
+                const ay = cellTop + 20 + ((ar.ry * (cellBot - cellTop - 40) + globalTime * ar.vy) % (cellBot - cellTop - 40) + (cellBot - cellTop - 40)) % (cellBot - cellTop - 40);
+                ctx.fillStyle = 'rgba(168, 85, 247, 0.45)';
+                ctx.beginPath();
+                ctx.arc(ax, ay, ar.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.fillStyle = '#E2E8F0';
+            ctx.font = 'bold 12px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('③ 高能碰撞诱导解离室 (CID Collision Cell · Argon Gas)', (cidLeft + cidRight) / 2, cellTop - 12);
+            ctx.restore();
+
+            // --- ANIMATED MOLECULE FLIGHT & SLOW-MOTION CLEAVAGE ---
+            // Phase A (0.0 - 2.3s): Molecule flies from ESI needle through Q1 into CID center
+            // Phase B (2.3 - 3.8s): High-energy collision with Argon, red bond fracture lines glow
+            // Phase C (3.8 - 8.2s): Slow-motion dissociation into Product Ions + Dashed Neutral Loss
+            const cidCenterX = cidLeft + (cidRight - cidLeft) * 0.36;
+            const cidCenterY = midY;
+
+            if (s3CycleTime < 2.3) {
+                const p = s3CycleTime / 2.3;
+                const curX = (esiRight - 10) + p * (cidCenterX - (esiRight - 10));
+                const curY = midY + Math.sin(p * Math.PI * 4) * 6;
+
+                // Ionization halo
+                ctx.save();
+                ctx.strokeStyle = mol.color;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.arc(curX, curY, 34, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+
+                drawChemicalSkeleton(ctx, curX, curY, 1.5, mol.catCode, mol.color, p * 0.4, 1);
+
+                ctx.fillStyle = '#FFF';
+                ctx.font = 'bold 12px JetBrains Mono, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${mol.name} (${mol.precursorLabel})`, curX, curY - 42);
+
+            } else if (s3CycleTime < 3.8) {
+                // Phase B: Bond Stress & Fracture Cleavage Line
+                const stress = (s3CycleTime - 2.3) / 1.5;
+                const shakeX = cidCenterX + (Math.random() - 0.5) * 6 * stress;
+                const shakeY = cidCenterY + (Math.random() - 0.5) * 6 * stress;
+
+                // Collision shockwave rings
+                ctx.save();
+                ctx.strokeStyle = '#F43F5E';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 1 - stress * 0.7;
+                ctx.beginPath();
+                ctx.arc(cidCenterX, cidCenterY, 20 + stress * 55, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+
+                drawChemicalSkeleton(ctx, shakeX, shakeY, 1.75, mol.catCode, mol.color, 0, 1);
+
+                // Glowing Red Cleavage Line across weak chemical bond
+                ctx.save();
+                ctx.strokeStyle = '#FF2E4C';
+                ctx.shadowColor = '#FF2E4C';
+                ctx.shadowBlur = 16;
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 3]);
+                ctx.beginPath();
+                ctx.moveTo(shakeX - 18, shakeY - 28);
+                ctx.lineTo(shakeX + 18, shakeY + 28);
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.fillStyle = '#FDA4AF';
+                ctx.font = 'bold 12px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`⚡ 类别特征化学键断裂 (${mol.neutralLoss})`, cidCenterX, cidCenterY - 54);
+
+            } else {
+                // Phase C: Dissociation into Product Ions + Neutral Loss Ghost
+                const fragTime = Math.min((s3CycleTime - 3.8) / 3.2, 1);
+                const ease = 1 - Math.pow(1 - fragTime, 3);
+
+                const prodFrags = mol.fragments.filter(f => !f.isPrecursor).slice(0, 3);
+                const targets = [
+                    { dx: 155, dy: -68 },
+                    { dx: 175, dy: 12 },
+                    { dx: 145, dy: 82 }
+                ];
+
+                // Draw Product Ions flying out
+                prodFrags.forEach((frag, idx) => {
+                    const t = targets[idx] || targets[0];
+                    const fx = cidCenterX + t.dx * ease;
+                    const fy = cidCenterY + t.dy * ease;
+
+                    // Trajectory line
+                    ctx.save();
+                    ctx.strokeStyle = mol.color;
+                    ctx.globalAlpha = 0.4;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(cidCenterX, cidCenterY);
+                    ctx.lineTo(fx, fy);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // Product ion sub-structure
+                    drawChemicalSkeleton(ctx, fx, fy, 1.05 - idx * 0.12, mol.catCode, mol.color, ease * (idx + 1) * 0.5, 1);
+
+                    // Product Ion Badge (Displaying generic diagnostic ion code instead of secret m/z)
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+                    ctx.strokeStyle = mol.color;
+                    ctx.lineWidth = 1.4;
+                    const boxW = 225;
+                    ctx.fillRect(fx - 15, fy - 34, boxW, 22);
+                    ctx.strokeRect(fx - 15, fy - 34, boxW, 22);
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 11px JetBrains Mono, monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(frag.code, fx - 8, fy - 19);
+                    ctx.fillStyle = '#94A3B8';
+                    ctx.font = '10px Inter, sans-serif';
+                    ctx.fillText(frag.label.slice(0, 12), fx + 98, fy - 19);
+                    ctx.restore();
+                });
+
+                // Draw Neutral Loss Ghost Group drifting up-left
+                const nlX = cidCenterX - 55 * ease;
+                const nlY = cidCenterY - 72 * ease;
+                ctx.save();
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.65)';
+                ctx.setLineDash([3, 3]);
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(nlX, nlY, 22, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#CBD5E1';
+                ctx.font = '11px JetBrains Mono, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(`特征中性丢失 (Neutral Loss)`, nlX, nlY - 28);
+                ctx.fillStyle = '#F59E0B';
+                ctx.fillText(mol.neutralLoss, nlX, nlY + 4);
+                ctx.restore();
+            }
+        }
+
+        // ============================================================================
+        // STAGE 4: 二级质谱指纹镜像谱库比对 (Head-to-Tail Mirror Plot Matching)
+        // ============================================================================
+        function renderStage4(dt) {
+            if (!isPaused) {
+                s4ScanProgress += dt * 0.32 * simSpeed;
+                if (s4ScanProgress > 1.25) s4ScanProgress = 0;
+            }
+
+            const mol = MOLECULES[selectedMolIndex];
+            const padL = 90;
+            const padR = cw - 65;
+            const plotW = padR - padL;
+            const topY = 115;
+            const botY = ch - 55;
+            const midY = (topY + botY) / 2;
+            const halfH = (botY - topY) * 0.42;
+
+            // Mirror Plot Frame
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.28)';
+            ctx.lineWidth = 1;
+            ctx.fillRect(padL, topY, plotW, botY - topY);
+            ctx.strokeRect(padL, topY, plotW, botY - topY);
+
+            // Top & Bottom Axis Titles
+            ctx.font = 'bold 12px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#F43F5E';
+            ctx.fillText(`▲ 实测血清入血二级质谱图 (Experimental Serum MS/MS · ${mol.name})`, padL + 14, topY + 22);
+
+            ctx.fillStyle = '#38BDF8';
+            ctx.fillText(`▼ 天然产物结构类别特征谱库 (Reference Class Library Spectrum · ${mol.enName})`, padL + 14, botY - 12);
+
+            // Center Relative m/z Axis Line
+            ctx.strokeStyle = '#64748B';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(padL, midY);
+            ctx.lineTo(padR, midY);
+            ctx.stroke();
+
+            // Relative Fragmentation Zone Grid ticks (No confidential exact m/z numbers)
+            ctx.font = '10px JetBrains Mono, monospace';
+            ctx.fillStyle = '#94A3B8';
+            ctx.textAlign = 'center';
+            const zoneLabels = [
+                { p: 0.15, txt: '低质量端特征环碎片区' },
+                { p: 0.38, txt: 'RDA裂解 / 骨架开环诊断区' },
+                { p: 0.62, txt: '中性丢失子离子区 (-CO₂/-Glc/-CH₂O)' },
+                { p: 0.85, txt: '准分子母离子区 [M-H]⁻/[M+H]⁺' }
+            ];
+            zoneLabels.forEach(z => {
+                const x = padL + z.p * plotW;
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
+                ctx.beginPath();
+                ctx.moveTo(x, topY);
+                ctx.lineTo(x, botY);
+                ctx.stroke();
+                ctx.fillText(z.txt, x, midY + 13);
+            });
+
+            // Laser Scanner X position
+            const scanX = padL + Math.min(s4ScanProgress, 1.0) * plotW;
+
+            // Draw Laser Scan Beam
+            if (s4ScanProgress <= 1.02) {
+                ctx.save();
+                const scanGrad = ctx.createLinearGradient(scanX - 35, 0, scanX, 0);
+                scanGrad.addColorStop(0, 'rgba(16, 185, 129, 0)');
+                scanGrad.addColorStop(1, 'rgba(16, 185, 129, 0.25)');
+                ctx.fillStyle = scanGrad;
+                ctx.fillRect(Math.max(padL, scanX - 35), topY, 35, botY - topY);
+
+                ctx.strokeStyle = '#10B981';
+                ctx.shadowColor = '#10B981';
+                ctx.shadowBlur = 12;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(scanX, topY);
+                ctx.lineTo(scanX, botY);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // Draw Minor Background Noise Peaks for Realism
+            const noisePositions = [0.11, 0.18, 0.28, 0.42, 0.51, 0.65, 0.76];
+            noisePositions.forEach(np => {
+                const nx = padL + np * plotW;
+                const nh = 12;
+                ctx.strokeStyle = 'rgba(244, 63, 94, 0.35)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(nx, midY);
+                ctx.lineTo(nx, midY - nh);
+                ctx.stroke();
+
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+                ctx.beginPath();
+                ctx.moveTo(nx, midY);
+                ctx.lineTo(nx, midY + nh * 0.9);
+                ctx.stroke();
+            });
+
+            // Draw Major Characteristic MS/MS Diagnostic Peaks (Head-to-Tail Mirror)
+            mol.fragments.forEach((frag) => {
+                const fx = padL + frag.pos * plotW;
+                const isScanned = scanX >= fx;
+                const peakH = (frag.relAbund / 100) * halfH;
+
+                // Experimental Peak (Top - Red, turns bright Emerald Green upon match)
+                ctx.save();
+                ctx.strokeStyle = isScanned ? '#10B981' : '#F43F5E';
+                ctx.shadowColor = isScanned ? '#10B981' : '#F43F5E';
+                ctx.shadowBlur = isScanned ? 14 : 6;
+                ctx.lineWidth = 3.8;
+                ctx.beginPath();
+                ctx.moveTo(fx, midY);
+                ctx.lineTo(fx, midY - peakH);
+                ctx.stroke();
+
+                // Reference Library Peak (Bottom - Royal Blue, turns Cyan/Blue upon match)
+                ctx.strokeStyle = isScanned ? '#38BDF8' : 'rgba(56, 189, 248, 0.55)';
+                ctx.shadowColor = '#38BDF8';
+                ctx.shadowBlur = isScanned ? 12 : 4;
+                ctx.beginPath();
+                ctx.moveTo(fx, midY);
+                ctx.lineTo(fx, midY + peakH * 0.98);
+                ctx.stroke();
+
+                // Peak Apex Dots & Matched Diagnostic Annotation
+                if (isScanned) {
+                    ctx.fillStyle = '#10B981';
+                    ctx.beginPath();
+                    ctx.arc(fx, midY - peakH, 4.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#38BDF8';
+                    ctx.beginPath();
+                    ctx.arc(fx, midY + peakH * 0.98, 4.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Top diagnostic code & fragment label
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 11px JetBrains Mono, monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(frag.code, fx, midY - peakH - 18);
+                    ctx.fillStyle = '#6EE7B7';
+                    ctx.font = '10px Inter, sans-serif';
+                    ctx.fillText(`✓ ${frag.label}`, fx, midY - peakH - 5);
+
+                    // Bottom library match label
+                    ctx.fillStyle = '#7DD3FC';
+                    ctx.font = '10px JetBrains Mono, monospace';
+                    ctx.fillText(`特征丰度比: ${frag.relAbund}%`, fx, midY + peakH + 16);
+                }
+                ctx.restore();
+            });
+
+            // Summary Class Identification Verification Badge on Top-Right of Mirror Plot
+            ctx.save();
+            const cardW = 305;
+            const cardH = 86;
+            const cardX = padR - cardW - 16;
+            const cardY = topY + 14;
+            ctx.fillStyle = 'rgba(6, 78, 59, 0.35)';
+            ctx.strokeStyle = '#10B981';
+            ctx.lineWidth = 1.5;
+            ctx.fillRect(cardX, cardY, cardW, cardH);
+            ctx.strokeRect(cardX, cardY, cardW, cardH);
+
+            drawChemicalSkeleton(ctx, cardX + 36, cardY + 43, 0.95, mol.catCode, mol.color, 0, 1);
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 13px Inter, sans-serif';
+            ctx.fillText(`${mol.name} (${mol.enName})`, cardX + 74, cardY + 24);
+
+            ctx.fillStyle = '#A7F3D0';
+            ctx.font = '11px JetBrains Mono, monospace';
+            ctx.fillText(`类别谱库匹配度 Score: ${mol.matchScore}%`, cardX + 74, cardY + 44);
+            ctx.fillStyle = '#CBD5E1';
+            ctx.fillText(`质量偏差 ${mol.massError} | 洗脱窗 ${mol.tRRange}`, cardX + 74, cardY + 62);
+            ctx.restore();
+        }
+
+        // Handle Canvas Clicks (e.g. clicking a peak in Stage 2 to select molecule)
+        function handleCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            if (currentStage === 2) {
+                const padL = 85;
+                const padR = cw - 65;
+                const plotW = padR - padL;
+                // Check if user clicked near one of the 9 retention time peaks
+                let closestIdx = -1;
+                let minDist = 30;
+                MOLECULES.forEach((m, idx) => {
+                    const px = padL + (m.tR / 17) * plotW;
+                    const dist = Math.abs(mx - px);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closestIdx = idx;
+                    }
+                });
+                if (closestIdx !== -1) {
+                    selectMolecule(closestIdx, false);
+                }
+            } else {
+                // Cycle to next molecule on click in Stage 3 or 4 if clicked inside plot
+                triggerActionPulse();
+            }
+        }
+
+        // Main 60fps Animation Loop
+        function mainLoop(now) {
+            // Frame delta time in seconds (clamped to avoid jumps after tab switches)
+            const rawDt = Math.min((now - lastTime) / 1000, 0.05);
+            lastTime = now;
+            if (!isPaused) globalTime += rawDt;
+
+            // Clear Canvas & Paint Deep Scientific Background (Ensures exported video has rich background instead of transparent black)
+            ctx.clearRect(0, 0, cw, ch);
+            const bgGrad = ctx.createRadialGradient(cw * 0.5, ch * 0.25, 40, cw * 0.5, ch * 0.5, Math.max(cw, ch) * 0.85);
+            bgGrad.addColorStop(0, '#142042');
+            bgGrad.addColorStop(0.65, '#090D1E');
+            bgGrad.addColorStop(1, '#050811');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, cw, ch);
+
+            // Subtle scientific grid inside Canvas so exported video retains full visual texture
+            ctx.save();
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.04)';
+            ctx.lineWidth = 1;
+            for (let gx = 0; gx < cw; gx += 32) {
+                ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, ch); ctx.stroke();
+            }
+            for (let gy = 0; gy < ch; gy += 32) {
+                ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(cw, gy); ctx.stroke();
+            }
+            ctx.restore();
+
+            // Render Active Stage
+            if (currentStage === 1) renderStage1(rawDt);
+            else if (currentStage === 2) renderStage2(rawDt);
+            else if (currentStage === 3) renderStage3(rawDt);
+            else if (currentStage === 4) renderStage4(rawDt);
+
+            requestAnimationFrame(mainLoop);
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
