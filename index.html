@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>血满草 (Sambucus adnata) 血清药物化学与 UPLC-MS/MS 鉴定动态演示系统</title>
+    <title>斯赤列 (Sambucus adnata) 血清药物化学与 UPLC-MS/MS 鉴定动态演示系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -86,7 +86,7 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="text-base md:text-lg font-bold tracking-tight text-white">血满草 (<span class="italic font-normal text-emerald-300">Sambucus adnata</span>) 入血成分 UPLC-Q-TOF-MS/MS 动态解析系统</h1>
+                        <h1 class="text-base md:text-lg font-bold tracking-tight text-white">斯赤列 (<span class="italic font-normal text-emerald-300">Sambucus adnata</span>) 入血成分 UPLC-Q-TOF-MS/MS 动态解析系统</h1>
                         <span class="hidden sm:inline-block text-[11px] mono uppercase px-2 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30">Serum Pharmacochemistry</span>
 
                         <!-- Author Credit: 王葳制作 (after main title) -->
@@ -176,7 +176,7 @@
                             <h2 id="hudStageTitle" class="text-sm font-bold text-white">第一幕：原植物释放与跨膜入血 (Bloodstream Absorption)</h2>
                         </div>
                         <p id="hudStageDesc" class="text-xs text-slate-300 mt-1 leading-relaxed">
-                            血满草组织释放木脂素（琥珀金）、环烯醚萜及特征成分（宝蓝）、五环三萜（翠绿）三大类活性分子，穿透小肠上皮磷脂双分子层进入微血管，与红细胞及血浆白蛋白交织随血流运行。
+                            斯赤列组织释放木脂素（琥珀金）、环烯醚萜及特征成分（宝蓝）、五环三萜（翠绿）三大类活性分子，穿透小肠上皮磷脂双分子层进入微血管，与红细胞及血浆白蛋白交织随血流运行。
                         </p>
                     </div>
 
@@ -248,7 +248,7 @@
                 <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2.5">
                     <div>
                         <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
-                            <span>血满草 5 大类入血成分结构库</span>
+                            <span>斯赤列 5 大类入血成分结构库</span>
                             <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">5 Structural Classes</span>
                         </h3>
                         <p class="text-[11px] text-slate-400">按结构类型归类展示（保密模式：隐去具体单体名称与精确质量数）</p>
@@ -284,7 +284,7 @@
 
     <script>
         /**
-         * 血满草 (Sambucus adnata) 5大结构类别入血成分数据库（保密脱敏版）
+         * 斯赤列 (Sambucus adnata) 5大结构类别入血成分数据库（保密脱敏版）
          * 严格不展示任何未公开的具体单体名称、具体分子式及精确单体m/z数值，全部按5大结构类别展示其共性色谱行为与质谱裂解规律
          */
         const MOLECULES = [
@@ -434,7 +434,7 @@
             1: {
                 badge: 'ACT I · 00:00 - 00:12',
                 title: '第一幕：原植物释放与跨膜入血 (Plant Release & Bloodstream Absorption)',
-                desc: '血满草释放酚酸类（紫）、环烯醚萜类（宝蓝）、黄酮类（珊瑚粉）、木脂素类（琥珀金）、三萜类（翠绿）五大结构类型分子，穿透肠上皮磷脂双分子层进入微血管，与红细胞及血浆白蛋白随血流运行。',
+                desc: '斯赤列释放酚酸类（紫）、环烯醚萜类（宝蓝）、黄酮类（珊瑚粉）、木脂素类（琥珀金）、三萜类（翠绿）五大结构类型分子，穿透肠上皮磷脂双分子层进入微血管，与红细胞及血浆白蛋白随血流运行。',
                 actionLabel: '释放新一波入血分子'
             },
             2: {
@@ -532,7 +532,7 @@
                         const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
                         const a = document.createElement('a');
                         a.href = url;
-                        a.download = `血满草入血与液质检测动画_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.${ext}`;
+                        a.download = `斯赤列入血与液质检测动画_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.${ext}`;
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
@@ -872,7 +872,7 @@
         }
 
         // ============================================================================
-        // STAGE 1: 血满草释放与跨膜入血 (Bloodstream Absorption)
+        // STAGE 1: 斯赤列释放与跨膜入血 (Bloodstream Absorption)
         // ============================================================================
         function initStage1Entities() {
             s1Molecules = [];
@@ -967,7 +967,7 @@
                 ctx.restore();
             });
 
-            // Red berry cluster (血满草特征红果)
+            // Red berry cluster (斯赤列特征红果)
             const berryCoords = [
                 [15, -45], [28, -38], [6, -34], [20, -26], [34, -25], [12, -55], [26, -52]
             ];
@@ -985,7 +985,7 @@
             ctx.fillStyle = '#A7F3D0';
             ctx.font = 'bold 13px Inter, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('血满草 (Sambucus adnata)', 0, 95);
+            ctx.fillText('斯赤列 (Sambucus adnata)', 0, 95);
             ctx.fillStyle = '#94A3B8';
             ctx.font = '11px JetBrains Mono, monospace';
             ctx.fillText('原植物提取物 · 释放多类小分子', 0, 113);
