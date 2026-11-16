@@ -1,0 +1,22 @@
+#!/bin/bash
+# temp helper: build wireguard usai.conf from VM-local pkey, start tunnel, verify
+PK=$(cat /home/wei/pkey 2>/dev/null)
+if [ -z "$PK" ]; then
+  echo "NO_PKEY: /home/wei/pkey missing"
+  exit 1
+fi
+umask 077
+printf '[Interface]\nPrivateKey = %s\nAddress = 10.7.0.2/32\nDNS = 1.1.1.1\n[Peer]\nPublicKey = fkUxVIsBwVEAO/36jQNwauk14beNSmLE1Jhas3IIrVg=\nEndpoint = 104.153.103.218:51820\nAllowedIPs = 0.0.0.0/0\nPersistentKeepalive = 25\n' "$PK" > /etc/wireguard/usai.conf
+systemctl enable --now wg-quick@usai
+sleep 6
+H=$(wg show usai latest-handshakes 2>/dev/null | awk '{print $2}')
+if [ -z "$H" ] || [ "$H" = "0" ]; then
+  echo "HANDSHAKE_FAILED: rolling back..."
+  wg-quick down usai 2>/dev/null
+  systemctl disable wg-quick@usai 2>/dev/null
+  echo "ROLLBACK_DONE"
+else
+  echo "HANDSHAKE_OK"
+  echo "--- your exit ip ---"
+  curl -s -m 10 https://ipinfo.io
+fi
